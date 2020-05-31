@@ -26,23 +26,38 @@ class ImageProcessor(object):
       prob de ruido de sal = prob
       prob de ruido de pimienta =  1 - prob
   """
-  def add_salt_and_pepper_noisy(self, image, prob):
+  def add_salt_and_pepper_noise(self, image, prob):
     if (float(prob) < 0 or float(prob) > 1):
       raise ValueError('Rango debe estar en el rango 0.0 a 1.0')
     rnd = np.random.rand(image.shape[0], image.shape[1])
-    noisy = image.copy()
-    noisy[rnd < float(prob)] = 255
-    noisy[rnd > 1-float(prob)] = 0
-    return noisy
+    noise = image.copy()
+    noise[rnd < float(prob)] = 255
+    noise[rnd > 1-float(prob)] = 0
+    return noise
   
   """
-    Calculamos un filtro de media.
+    Calculamos la convolucion de una matriz por su kernel
     Este filtro es equivalente a la implementación de opencv de
-    cv2.blur(image, kernel).
+    cv2.filter2D(image, kernel).
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
   def convolution(image, kernel, border_type=cv2.BORDER_REFLECT_101):
-    result = np.zeros(image.shape, dtype=np.uint8)
+    result = np.zeros(image.shape, dtype=np.float64)
+
+    #Expandimos la imagen para aplicar el filtro tambien en los bordes
+    pad = len(kernel) // 2
+    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
+
+    #Recorremos la matriz y aplicamos el filtro a cada pixel
+    for i in range(pad, (expanded_image.shape[0])-pad):
+      for j in range(pad, (expanded_image.shape[1])-pad):
+        #Obtenemos los vecinos
+        sub_image = expanded_image[(i-pad):(i+1+pad), (j-pad):(j+1+pad)]
+        #Multiplicamos cada vecino por el kernel
+        sum = np.sum(kernel * sub_image)
+        #Asignamos el resultado a la nueva imagen
+        result[i-pad][j-pad] = sum
+
     return result
 
   """
@@ -54,7 +69,6 @@ class ImageProcessor(object):
   def median_filter(image, size, border_type=cv2.BORDER_REFLECT_101):
     return image
 
-
   """
     Calculamos un filtro de mediana propuesto por Zhang & Karim.
     Este filtro es equivalente a la implementación de opencv de
@@ -63,3 +77,11 @@ class ImageProcessor(object):
   """
   def median_filter_zk(image, size, K, border_type=cv2.BORDER_REFLECT_101):
     return image
+
+
+  """
+    Calculamos el Error Cuadratico Medio de Acuerdo entre dos matrices.
+  """
+  @staticmethod
+  def calc_mse(original_image, stimated_image):
+    return 0.0
