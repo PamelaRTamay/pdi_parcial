@@ -42,21 +42,7 @@ class ImageProcessor(object):
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
   def convolution(image, kernel, border_type=cv2.BORDER_REFLECT_101):
-    result = np.zeros(image.shape, dtype=np.float64)
-
-    #Expandimos la imagen para aplicar el filtro tambien en los bordes
-    pad = len(kernel) // 2
-    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
-
-    #Recorremos la matriz y aplicamos el filtro a cada pixel
-    for i in range(pad, (expanded_image.shape[0])-pad):
-      for j in range(pad, (expanded_image.shape[1])-pad):
-        #Obtenemos los vecinos
-        sub_image = expanded_image[(i-pad):(i+1+pad), (j-pad):(j+1+pad)]
-        #Multiplicamos cada vecino por el kernel
-        sum = np.sum(kernel * sub_image)
-        #Asignamos el resultado a la nueva imagen
-        result[i-pad][j-pad] = sum
+    result = cv2.filter2D(image,-1, kernel, borderType = border_type)
 
     return result
 
@@ -66,8 +52,24 @@ class ImageProcessor(object):
     cv2.medianFilter(image, size).
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
-  def median_filter(image, size, border_type=cv2.BORDER_REFLECT_101):
-    return image
+  def median_filter(self, image, size, border_type=cv2.BORDER_REFLECT_101):
+    result = np.zeros(image.shape, dtype=np.float64)
+
+    #Expandimos la imagen para aplicar el filtro tambien en los bordes
+    #Se utiliza Border_Replicate, ya que es el que usa openCV
+    pad = int(size) // 2
+    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
+
+    #Recorremos la matriz y aplicamos el filtro a cada pixel
+    for i in range(pad, (expanded_image.shape[0])-pad):
+      for j in range(pad, (expanded_image.shape[1])-pad):
+        #Obtenemos los vecinos
+        sub_image = expanded_image[(i-pad):(i+1+pad), (j-pad):(j+1+pad)]
+        #Obtenemos la mediana
+        median = np.median(sub_image)
+        #Asignamos el resultado a la nueva imagen
+        result[i-pad][j-pad] = median
+    return result
 
   """
     Calculamos un filtro de mediana propuesto por Zhang & Karim.
