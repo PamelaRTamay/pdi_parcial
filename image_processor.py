@@ -74,14 +74,13 @@ class ImageProcessor(object):
     return result'''
     result = np.zeros(image.shape, dtype=np.uint8)
     pad = window_size // 2
-    image_expanded = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
+    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
 
-    tam = len(image)
     i = 0
-    while(i<tam):
+    while(i<expanded_image.shape[0]):
       j = 0
-      while(j<tam):
-        sub_image = image_expanded[i:i+window_size, j:j+window_size]
+      while(j<expanded_image.shape[1]):
+        sub_image = expanded_image[i:i+window_size, j:j+window_size]
         result[i][j] = np.median(sub_image)
         j+=1
       i+=1
