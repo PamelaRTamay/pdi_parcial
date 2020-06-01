@@ -9,7 +9,9 @@ class ImageProcessor(object):
     self.init(image_url)
 
   def init(self, image_url):
-    self.original_image = cv2.imread(image_url, 0)
+    image = cv2.imread(image_url, 0)
+    self.original_image = image.astype('float64')
+
 
   """
     Retornamos la imagen original
@@ -77,7 +79,36 @@ class ImageProcessor(object):
     cv2.medianFilter(image, size).
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
-  def median_filter_zk(image, size, K, border_type=cv2.BORDER_REFLECT_101):
+  def median_filter_zk(self, image, size, K, border_type=cv2.BORDER_REFLECT_101):
+    kernel_1 = np.array([
+      [ 0,  0, 0,  0,  0], 
+      [ 0,  0, 0,  0,  0], 
+      [-1, -1, 4, -1, -1],
+      [ 0,  0, 0,  0,  0],
+      [ 0,  0, 0,  0,  0]], dtype=np.float64)
+
+    kernel_2 = np.array([
+      [ 0,  0, -1,  0,  0], 
+      [ 0,  0, -1,  0,  0], 
+      [ 0,  0,  4,  0,  0],
+      [ 0,  0, -1,  0,  0],
+      [ 0,  0, -1,  0,  0]], dtype=np.float64)
+
+    kernel_3 = np.array([
+      [-1,  0,  0,  0,  0], 
+      [ 0, -1,  0,  0,  0], 
+      [ 0,  0,  4,  0,  0],
+      [ 0,  0,  0, -1,  0],
+      [ 0,  0,  0,  0, -1]], dtype=np.float64)
+
+    kernel_4 = np.array([
+      [ 0,  0,  0,  0, -1], 
+      [ 0,  0,  0, -1,  0], 
+      [ 0,  0,  4,  0,  0],
+      [ 0, -1,  0,  0,  0],
+      [-1,  0,  0,  0,  0]], dtype=np.float64)
+
+
     return image
 
 
