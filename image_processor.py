@@ -55,7 +55,7 @@ class ImageProcessor(object):
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
   def median_filter(self, image, size, border_type=cv2.BORDER_REFLECT_101):
-    result = np.zeros(image.shape, dtype=np.float64)
+    '''result = np.zeros(image.shape, dtype=np.float64)
 
     #Expandimos la imagen para aplicar el filtro tambien en los bordes
     #Se utiliza Border_Replicate, ya que es el que usa openCV
@@ -71,6 +71,21 @@ class ImageProcessor(object):
         median = np.median(sub_image)
         #Asignamos el resultado a la nueva imagen
         result[i-pad][j-pad] = median
+    return result'''
+    result = np.zeros(image.shape, dtype=np.uint8)
+    pad = window_size // 2
+    image_expanded = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
+
+    tam = len(image)
+    i = 0
+    while(i<tam):
+      j = 0
+      while(j<tam):
+        sub_image = image_expanded[i:i+window_size, j:j+window_size]
+        result[i][j] = np.median(sub_image)
+        j+=1
+      i+=1
+
     return result
 
   """
