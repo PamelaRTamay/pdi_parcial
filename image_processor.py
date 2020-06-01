@@ -43,7 +43,7 @@ class ImageProcessor(object):
     cv2.filter2D(image, kernel).
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
-  def convolution(image, kernel, border_type=cv2.BORDER_REFLECT_101):
+  def convolution(self, image, kernel, border_type=cv2.BORDER_REFLECT_101):
     result = cv2.filter2D(image,-1, kernel, borderType = border_type)
 
     return result
@@ -55,36 +55,18 @@ class ImageProcessor(object):
     Tener en cuenta que debe utilizarse un borde para la expansion de la imagen.
   """
   def median_filter(self, image, size, border_type=cv2.BORDER_REFLECT_101):
-    '''result = np.zeros(image.shape, dtype=np.float64)
-
-    #Expandimos la imagen para aplicar el filtro tambien en los bordes
-    #Se utiliza Border_Replicate, ya que es el que usa openCV
+    result = np.zeros(image.shape, dtype=np.float64)
     pad = int(size) // 2
     expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
 
-    #Recorremos la matriz y aplicamos el filtro a cada pixel
-    for i in range(pad, (expanded_image.shape[0])-pad):
-      for j in range(pad, (expanded_image.shape[1])-pad):
-        #Obtenemos los vecinos
-        sub_image = expanded_image[(i-pad):(i+1+pad), (j-pad):(j+1+pad)]
-        #Obtenemos la mediana
-        median = np.median(sub_image)
-        #Asignamos el resultado a la nueva imagen
-        result[i-pad][j-pad] = median
-    return result'''
-    result = np.zeros(image.shape, dtype=np.uint8)
-    pad = window_size // 2
-    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
-
     i = 0
-    while(i<expanded_image.shape[0]):
+    while(i<image.shape[0]):
       j = 0
-      while(j<expanded_image.shape[1]):
-        sub_image = expanded_image[i:i+window_size, j:j+window_size]
+      while(j<image.shape[1]):
+        sub_image = expanded_image[i:i+int(size), j:j+int(size)]
         result[i][j] = np.median(sub_image)
         j+=1
       i+=1
-
     return result
 
   """
@@ -122,8 +104,30 @@ class ImageProcessor(object):
       [ 0, -1,  0,  0,  0],
       [-1,  0,  0,  0,  0]], dtype=np.float64)
 
+    conv_1 = self.convolution(image, kernel_1, border_type)
+    conv_2 = self.convolution(image, kernel_2, border_type)
+    conv_3 = self.convolution(image, kernel_3, border_type)
+    conv_4 = self.convolution(image, kernel_4, border_type)
 
-    return image
+    result = np.zeros(image.shape, dtype=np.float64)
+    pad = int(size) // 2
+    expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
+
+    i = 0
+    while(i<image.shape[0]):
+      j = 0
+      while(j<image.shape[1]):
+        pixels = np.array([conv_1[i][j], conv_2[i][j],conv_3[i][j],conv_4[i][j]])
+        min = np.amin(pixels)
+        if(min > int(K)):
+          sub_image = expanded_image[i:i+int(size), j:j+int(size)]
+          result[i][j] = np.median(sub_image)
+        else:
+          result[i][j] = image[i][j]
+        j+=1
+      i+=1
+
+    return result
 
 
   """
