@@ -109,6 +109,8 @@ class ImageProcessor(object):
     conv_3 = self.convolution(image, kernel_3, border_type)
     conv_4 = self.convolution(image, kernel_4, border_type)
 
+    
+
     result = np.zeros(image.shape, dtype=np.float64)
     pad = int(size) // 2
     expanded_image = cv2.copyMakeBorder(image, pad, pad, pad, pad, border_type)
@@ -118,7 +120,7 @@ class ImageProcessor(object):
       j = 0
       while(j<image.shape[1]):
         pixels = np.array([conv_1[i][j], conv_2[i][j],conv_3[i][j],conv_4[i][j]])
-        min = np.amin(pixels)
+        min = np.amin(np.absolute(pixels))
         if(min > int(K)):
           sub_image = expanded_image[i:i+int(size), j:j+int(size)]
           result[i][j] = np.median(sub_image)

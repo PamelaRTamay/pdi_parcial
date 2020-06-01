@@ -17,12 +17,12 @@ import os
 def show_images(image_processor, prob_salt_pepper, k_threshold, median_window_size):
   original_image = image_processor.get_original_image()
   with_salt_pepper = image_processor.add_salt_and_pepper_noise(original_image, prob_salt_pepper)
-  #with_mediam_filter = image_processor.median_filter(with_salt_pepper, median_window_size)
+  with_mediam_filter = image_processor.median_filter(with_salt_pepper, median_window_size)
   with_zk = image_processor.median_filter_zk(with_salt_pepper, median_window_size, k_threshold)
   plt.subplot(2, 2, 1), plt.imshow(original_image, cmap='gray', vmin=0, vmax=255), plt.title('Original')
-  #plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title('Ruido SyP')
-  #plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title('Mediana')
-  plt.subplot(2, 2, 2), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title('Zhang y Karim')
+  plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title('Ruido SyP')
+  plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title('Mediana')
+  plt.subplot(2, 2, 4), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title('Zhang y Karim')
   plt.show()
 
 
