@@ -32,11 +32,17 @@ def show_images(image_processor, prob_salt_pepper, k_threshold, median_window_si
 """
 def show_errors(image_processor, prob_salt_pepper, k_threshold, median_window_size):
 
-  # image_processor.calc_mse(None, None)
+  original_image = image_processor.get_original_image()
+  with_salt_pepper = image_processor.add_salt_and_pepper_noise(original_image, prob_salt_pepper)
 
-  t_range = np.arange(1., 10., 2)
+  t_range = np.arange(50., 300., 50)
+  zk_results = np.array([image_processor.median_filter_zk(with_salt_pepper, median_window_size, T) for T in t_range])
+  mse_results = [image_processor.calc_mse(original_image, zk_image) for zk_image in zk_results]
+  psnr_results = [image_processor.calc_psnr(mse) for mse in mse_results]
+  mae_results = [image_processor.calc_mae(original_image, zk_image) for zk_image in zk_results]
+
   plt.title("Medicion cuantitativa del Filtro ZyK con K={0} y ventana={1}".format(k_threshold, median_window_size))
-  plt.plot(t_range, t_range, '^-k', t_range, t_range ** 2, '-or', t_range, t_range ** 2.2, '--sb')
+  plt.plot(t_range, mse_results, '^--k', t_range, psnr_results, '-or', t_range, mae_results, '--sb')
   plt.show()
 
 if __name__ == '__main__':

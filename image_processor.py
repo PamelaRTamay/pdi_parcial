@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import cv2
-import numpy as np 
+import numpy as np
+from math import log10, sqrt  
 
 class ImageProcessor(object):
   """docstring for ImageProcessor"""
@@ -137,4 +138,22 @@ class ImageProcessor(object):
   """
   @staticmethod
   def calc_mse(original_image, stimated_image):
-    return 0.0
+    mse = (np.square(original_image - stimated_image)).mean()
+    return mse
+
+  """
+    Calculamos el Proporción Máxima de Señal a Ruido dado un mse
+  """
+  @staticmethod
+  def calc_psnr(mse):
+    psnr = 20 * log10(255 / sqrt(mse)) 
+    return psnr
+
+
+  """
+    Calculamos el Error absoluto medio de Acuerdo entre dos matrices.
+  """
+  @staticmethod
+  def calc_mae(original_image, stimated_image):
+    mse = (original_image - stimated_image).mean()
+    return mse
