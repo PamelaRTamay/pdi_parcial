@@ -155,5 +155,5 @@ class ImageProcessor(object):
   """
   @staticmethod
   def calc_mae(original_image, stimated_image):
-    mse = (original_image - stimated_image).mean()
-    return mse
+    mae = (original_image - stimated_image).mean()
+    return mae
