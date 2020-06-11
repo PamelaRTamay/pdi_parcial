@@ -19,12 +19,11 @@ def show_images(image_processor, prob_salt_pepper, k_threshold, median_window_si
   with_salt_pepper = image_processor.add_salt_and_pepper_noise(original_image, prob_salt_pepper)
   with_mediam_filter = image_processor.median_filter(with_salt_pepper, median_window_size)
   with_zk = image_processor.median_filter_zk(with_salt_pepper, median_window_size, k_threshold)
-  plt.subplot(2, 2, 1), plt.imshow(original_image, cmap='gray', vmin=0, vmax=255), plt.title('Original')
-  plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title('Ruido SyP')
-  plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title('Mediana')
-  plt.subplot(2, 2, 4), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title('Zhang y Karim')
+  plt.subplot(2, 2, 1), plt.imshow(original_image, cmap='gray', vmin=0, vmax=255), plt.title('Imagen Original')
+  plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con Ruido SyP con P={0}".format(prob_salt_pepper))
+  plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con filtro de mediana con ventana={0}".format(median_window_size))
+  plt.subplot(2, 2, 4), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title("Imagen con Filtro de Zhang y Karim con K={0} y ventana={1}".format(k_threshold, median_window_size))
   plt.show()
-
 
 """
   Mostramos un grafico con matplotlib con los errores calculados
@@ -41,8 +40,13 @@ def show_errors(image_processor, prob_salt_pepper, k_threshold, median_window_si
   psnr_results = [image_processor.calc_psnr(mse) for mse in mse_results]
   mae_results = [image_processor.calc_mae(original_image, zk_image) for zk_image in zk_results]
 
-  plt.title("Medicion cuantitativa del Filtro ZyK con K={0} y ventana={1}".format(k_threshold, median_window_size))
-  plt.plot(t_range, mse_results, '^--k', t_range, psnr_results, '-or', t_range, mae_results, '--sb')
+  plt.title("Medicion cuantitativa del Filtro ZyK. ruido={0} y ventana={1}".format(prob_salt_pepper, median_window_size))
+  plt.plot(t_range, mse_results, '^--c', label='MSE')
+  plt.plot(t_range, psnr_results, '--or',label='PSNR')
+  plt.plot(t_range, mae_results, '--sg', label='MAE')
+  plt.legend(loc = 'upper left')
+  plt.xlabel('Umbral')
+  plt.ylabel('Error')
   plt.show()
 
 if __name__ == '__main__':
