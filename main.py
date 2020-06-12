@@ -18,12 +18,12 @@ def show_images(image_processor, prob_salt_pepper, k_threshold, median_window_si
   original_image = image_processor.get_original_image()
   with_salt_pepper = image_processor.add_salt_and_pepper_noise(original_image, prob_salt_pepper)
   with_mediam_filter = image_processor.median_filter(with_salt_pepper, median_window_size)
-  #with_zk = image_processor.median_filter_zk(with_salt_pepper, median_window_size, k_threshold)
-  cv2.imwrite('median.png', with_mediam_filter)
-  #plt.subplot(2, 2, 1), plt.imshow(original_image, cmap='gray', vmin=0, vmax=255), plt.title('Imagen Original')
-  #plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con Ruido SyP con P={0}".format(prob_salt_pepper))
-  #plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con filtro de mediana con ventana={0}".format(median_window_size))
-  #plt.subplot(2, 2, 4), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title("Imagen con Filtro de Zhang y Karim con K={0} y ventana={1}".format(k_threshold, median_window_size))
+  with_zk = image_processor.median_filter_zk(with_salt_pepper, median_window_size, k_threshold)
+
+  plt.subplot(2, 2, 1), plt.imshow(original_image, cmap='gray', vmin=0, vmax=255), plt.title('Imagen Original')
+  plt.subplot(2, 2, 2), plt.imshow(with_salt_pepper, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con Ruido SyP con P={0}".format(prob_salt_pepper))
+  plt.subplot(2, 2, 3), plt.imshow(with_mediam_filter, cmap='gray', vmin=0, vmax=255), plt.title(" Imagen con filtro de mediana con ventana={0}".format(median_window_size))
+  plt.subplot(2, 2, 4), plt.imshow(with_zk, cmap='gray', vmin=0, vmax=255), plt.title("Imagen con Filtro de Zhang y Karim con K={0} y ventana={1}".format(k_threshold, median_window_size))
   plt.show()
 
 """
@@ -35,6 +35,7 @@ def show_errors(image_processor, prob_salt_pepper, k_threshold, median_window_si
   original_image = image_processor.get_original_image()
   with_salt_pepper = image_processor.add_salt_and_pepper_noise(original_image, prob_salt_pepper)
 
+  #rango de 50 a 300 con intervalos de 50
   t_range = np.arange(50., 300., 50)
   zk_results = np.array([image_processor.median_filter_zk(with_salt_pepper, median_window_size, T) for T in t_range])
   mse_results = [image_processor.calc_mse(original_image, zk_image) for zk_image in zk_results]
